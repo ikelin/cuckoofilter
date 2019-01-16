@@ -10,7 +10,7 @@
   <packaging>jar</packaging>
 
   <name>Cuckoo Filter</name>
-  <description></description>
+  <description>A thread safe probability filter that performs set membership tests.</description>
   <url>https://github.com/ikelin/cuckoofilter.git</url>
 
   <licenses>
