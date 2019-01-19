@@ -236,7 +236,7 @@ public class CuckooFilter {
     private int entriesPerBucket;
     private int concurrencyLevel;
 
-    public Builder(int expectedMaxCapacity) {
+    Builder(int expectedMaxCapacity) {
       if (expectedMaxCapacity <= 0) {
         throw new IllegalArgumentException("expectedMaxCapacity must be greater than 0");
       }

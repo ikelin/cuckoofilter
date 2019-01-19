@@ -82,7 +82,7 @@ class CuckooTable {
 
   /**
    * Adds the provided value to the specified bucket.  Returns true if the bucket contains an empty
-   * entry and add was successful.  Returns fasle if the bucket is full and add was not successful.
+   * entry and add was successful.  Returns false if the bucket is full and add was not successful.
    *
    * @param bucket the bucket to add value to
    * @param value the value to be added
@@ -119,7 +119,7 @@ class CuckooTable {
    * @param bucket the bucket to get and set value
    * @param entry the entry of the bucket to get and set value
    * @param value the value to be set
-   * @return the existing value at the specifiied bucket and entry
+   * @return the existing value at the specified bucket and entry
    */
   long getAndSet(int bucket, int entry, long value) {
     StampedLock lock = getBinLock(bucket);
