@@ -3,7 +3,7 @@
 A thread safe probability filter that performs set membership tests.  A lookup returns either __might be in set__ or __definitely not in set__.
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.ikelin/cuckoofilter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.ikelin/cuckoofilter)
-[![Build Status](https://travis-ci.org/com.ikelin/cuckoofilter.svg?branch=master)](https://travis-ci.org/com.ikelin/cuckoofilter)
+[![Build Status](https://travis-ci.org/ikelin/cuckoofilter.svg?branch=master)](https://travis-ci.org/ikelin/cuckoofilter)
 
 ## Usage
 
