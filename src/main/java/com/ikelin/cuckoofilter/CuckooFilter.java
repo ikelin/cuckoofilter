@@ -299,6 +299,10 @@ public class CuckooFilter {
         throw new IllegalArgumentException("entriesPerBucket must be greater than 0");
       }
 
+      if (entriesPerBucket > 8) {
+        throw new IllegalArgumentException("entriesPerBucket must be less than or equal to 8");
+      }
+
       boolean powerOfTwo = (int) (Math.ceil((Math.log(entriesPerBucket) / Math.log(2)))) ==
           (int) (Math.floor(((Math.log(entriesPerBucket) / Math.log(2)))));
       if (!powerOfTwo) {

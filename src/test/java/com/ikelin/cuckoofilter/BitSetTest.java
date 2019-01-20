@@ -19,6 +19,7 @@ class BitSetTest {
     assertThrows(IndexOutOfBoundsException.class, () -> bitSet.get(0, 5));
     assertThrows(IllegalArgumentException.class, () -> bitSet.get(0, 0));
     assertThrows(IndexOutOfBoundsException.class, () -> bitSet.get(4, 0));
+    assertThrows(IllegalArgumentException.class, () -> new BitSet(Long.SIZE * 2).get(0, Long.SIZE + 1));
   }
 
   @Test

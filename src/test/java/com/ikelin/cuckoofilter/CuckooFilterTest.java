@@ -2,15 +2,20 @@ package com.ikelin.cuckoofilter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Stream;
 import net.openhft.hashing.LongHashFunction;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -39,10 +44,20 @@ class CuckooFilterTest {
 
   @Test
   void testCreateWithFpp() {
-    CuckooFilter filter = CuckooFilter.create(100).withFalsePositiveProbability(0.001D).build();
+    CuckooFilter filter = CuckooFilter.create(100).withFalsePositiveProbability(0.01D).build();
+    assertEquals(64, filter.getBuckets());
+    assertEquals(2, filter.getEntriesPerBucket());
+    assertEquals(12, filter.getBitsPerEntry());
+
+    filter = CuckooFilter.create(100).withFalsePositiveProbability(0.001D).build();
     assertEquals(32, filter.getBuckets());
     assertEquals(4, filter.getEntriesPerBucket());
     assertEquals(14, filter.getBitsPerEntry());
+
+    filter = CuckooFilter.create(100).withFalsePositiveProbability(0.000001D).build();
+    assertEquals(16, filter.getBuckets());
+    assertEquals(8, filter.getEntriesPerBucket());
+    assertEquals(24, filter.getBitsPerEntry());
   }
 
   @Test
@@ -65,6 +80,27 @@ class CuckooFilterTest {
   void testCreateWithConcurrencyLevel() {
     CuckooFilter filter = CuckooFilter.create(100).withConcurrencyLevel(3).build();
     assertEquals(3, filter.getConcurrencyLevel());
+
+    int availableProcessors = Runtime.getRuntime().availableProcessors();
+    filter = CuckooFilter.create(100).build();
+    if (availableProcessors > filter.getBuckets()) {
+      assertEquals(filter.getBuckets(), filter.getConcurrencyLevel());
+    } else {
+      assertEquals(availableProcessors, filter.getConcurrencyLevel());
+    }
+  }
+
+  @Test
+  void testCreateInvalid() {
+    assertThrows(IllegalArgumentException.class, () -> CuckooFilter.create(0).build());
+    assertThrows(IllegalArgumentException.class, () -> CuckooFilter.create(100).withFalsePositiveProbability(0).build());
+    assertThrows(IllegalArgumentException.class, () -> CuckooFilter.create(100).withFalsePositiveProbability(1).build());
+    assertThrows(IllegalArgumentException.class, () -> CuckooFilter.create(100).withBitsPerEntry(0).build());
+    assertThrows(IllegalArgumentException.class, () -> CuckooFilter.create(100).withBitsPerEntry(Integer.SIZE).build());
+    assertThrows(IllegalArgumentException.class, () -> CuckooFilter.create(100).withEntriesPerBucket(0).build());
+    assertThrows(IllegalArgumentException.class, () -> CuckooFilter.create(100).withEntriesPerBucket(5).build());
+    assertThrows(IllegalArgumentException.class, () -> CuckooFilter.create(100).withEntriesPerBucket(16).build());
+    assertThrows(IllegalArgumentException.class, () -> CuckooFilter.create(100).withConcurrencyLevel(0).build());
   }
 
   @Test
@@ -208,7 +244,8 @@ class CuckooFilterTest {
   }
 
   @Test
-  void testConcurrency() throws ExecutionException, InterruptedException {
+  void testConcurrency()
+      throws ExecutionException, InterruptedException, IOException, URISyntaxException {
     int capacity = (int) ((1 << 10) * 0.955D);
     int items = (int) (capacity * 0.955D);
     double fpp = 0.002D;
@@ -222,8 +259,9 @@ class CuckooFilterTest {
 
     // ids to put into filter
     List<Long> ids = new ArrayList<>(items);
-    for (int i = 0; i < items; i++) {
-      ids.add(hashFunction.hashChars(UUID.randomUUID().toString()));
+    try (Stream<String> lines = Files
+        .lines(Paths.get(ClassLoader.getSystemResource("ids.txt").toURI()))) {
+      lines.forEach(line -> ids.add(hashFunction.hashChars(line)));
     }
 
     // put

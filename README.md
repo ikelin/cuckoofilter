@@ -38,7 +38,7 @@ The allowed concurrency among read and write operations is guided by *Concurrenc
 To lookup an item in the filter, use the `mightContain()` method:
 
 ```java
-CuckooFilter tables = CuckooFilter.create(100).build;
+CuckooFilter tables = CuckooFilter.create(100).build();
 boolean tableMightExist = tables.mightContain(tableHash)
 if (!tableMightExist) {
   // table definitely does not exist, do not query database
