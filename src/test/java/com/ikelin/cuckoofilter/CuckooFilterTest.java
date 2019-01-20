@@ -93,14 +93,22 @@ class CuckooFilterTest {
   @Test
   void testCreateInvalid() {
     assertThrows(IllegalArgumentException.class, () -> CuckooFilter.create(0).build());
-    assertThrows(IllegalArgumentException.class, () -> CuckooFilter.create(100).withFalsePositiveProbability(0).build());
-    assertThrows(IllegalArgumentException.class, () -> CuckooFilter.create(100).withFalsePositiveProbability(1).build());
-    assertThrows(IllegalArgumentException.class, () -> CuckooFilter.create(100).withBitsPerEntry(0).build());
-    assertThrows(IllegalArgumentException.class, () -> CuckooFilter.create(100).withBitsPerEntry(Integer.SIZE).build());
-    assertThrows(IllegalArgumentException.class, () -> CuckooFilter.create(100).withEntriesPerBucket(0).build());
-    assertThrows(IllegalArgumentException.class, () -> CuckooFilter.create(100).withEntriesPerBucket(5).build());
-    assertThrows(IllegalArgumentException.class, () -> CuckooFilter.create(100).withEntriesPerBucket(16).build());
-    assertThrows(IllegalArgumentException.class, () -> CuckooFilter.create(100).withConcurrencyLevel(0).build());
+    assertThrows(IllegalArgumentException.class,
+        () -> CuckooFilter.create(100).withFalsePositiveProbability(0).build());
+    assertThrows(IllegalArgumentException.class,
+        () -> CuckooFilter.create(100).withFalsePositiveProbability(1).build());
+    assertThrows(IllegalArgumentException.class,
+        () -> CuckooFilter.create(100).withBitsPerEntry(0).build());
+    assertThrows(IllegalArgumentException.class,
+        () -> CuckooFilter.create(100).withBitsPerEntry(Integer.SIZE).build());
+    assertThrows(IllegalArgumentException.class,
+        () -> CuckooFilter.create(100).withEntriesPerBucket(0).build());
+    assertThrows(IllegalArgumentException.class,
+        () -> CuckooFilter.create(100).withEntriesPerBucket(5).build());
+    assertThrows(IllegalArgumentException.class,
+        () -> CuckooFilter.create(100).withEntriesPerBucket(16).build());
+    assertThrows(IllegalArgumentException.class,
+        () -> CuckooFilter.create(100).withConcurrencyLevel(0).build());
   }
 
   @Test
@@ -257,50 +265,97 @@ class CuckooFilterTest {
 
     ExecutorService executorService = Executors.newFixedThreadPool(8);
 
-    // ids to put into filter
-    List<Long> ids = new ArrayList<>(items);
+    // load banned ids
+    List<Long> bannedIds = new ArrayList<>();
     try (Stream<String> lines = Files
-        .lines(Paths.get(ClassLoader.getSystemResource("ids.txt").toURI()))) {
-      lines.forEach(line -> ids.add(hashFunction.hashChars(line)));
+        .lines(Paths.get(ClassLoader.getSystemResource("banned-ids.txt").toURI()))) {
+      lines.forEach(line -> bannedIds.add(hashFunction.hashChars(line)));
     }
 
-    // put
-    List<Future<Boolean>> futures = new ArrayList<>(items);
-    for (long id : ids) {
-      Future<Boolean> future = executorService.submit(() -> filter.put(id));
-      futures.add(future);
+    // load request ids
+    List<Long> requestIds = new ArrayList<>();
+    try (Stream<String> lines = Files
+        .lines(Paths.get(ClassLoader.getSystemResource("request-ids.txt").toURI()))) {
+      lines.forEach(line -> requestIds.add(hashFunction.hashChars(line)));
     }
 
-    for (Future<Boolean> future : futures) {
+    // put banned ids into set while querying request ids
+    List<Future<Boolean>> bannedIdFutures = new ArrayList<>();
+    List<Future<Boolean>> requestIdFutures = new ArrayList<>();
+
+    for (int i = 0; i < bannedIds.size(); i++) {
+      final int index = i;
+      Future<Boolean> bannedIdFuture = executorService
+          .submit(() -> filter.put(bannedIds.get(index)));
+      bannedIdFutures.add(bannedIdFuture);
+
+      Future<Boolean> requestIdFuture = executorService
+          .submit(() -> filter.mightContain(requestIds.get(index)));
+      requestIdFutures.add(requestIdFuture);
+    }
+
+    // all puts should be successful
+    for (Future<Boolean> future : bannedIdFutures) {
       assertTrue(future.get());
     }
-    futures.clear();
+    bannedIdFutures.clear();
+
+    // non of the request ids should be in set
+    for (Future<Boolean> future : requestIdFutures) {
+      assertFalse(future.get());
+    }
+    requestIdFutures.clear();
+
+    // verify all banned ids are inserted
     assertEquals(items, filter.getItems());
     assertEquals((double) filter.getItems() / (filter.getCapacity()), filter.getLoadFactor(),
         0.001);
 
-    // might contain
-    for (long id : ids) {
+    // banned ids return true for might contain
+    for (long id : bannedIds) {
       Future<Boolean> future = executorService.submit(() -> filter.mightContain(id));
-      futures.add(future);
+      bannedIdFutures.add(future);
     }
 
-    for (Future<Boolean> future : futures) {
+    for (Future<Boolean> future : bannedIdFutures) {
       assertTrue(future.get());
     }
-    futures.clear();
+    bannedIdFutures.clear();
 
-    // remove
-    for (long id : ids) {
-      Future<Boolean> future = executorService.submit(() -> filter.remove(id));
-      futures.add(future);
+    // request ids return false for might contain
+    for (long id : requestIds) {
+      Future<Boolean> future = executorService.submit(() -> filter.mightContain(id));
+      requestIdFutures.add(future);
     }
 
-    for (Future<Boolean> future : futures) {
+    for (Future<Boolean> future : requestIdFutures) {
+      assertFalse(future.get());
+    }
+    requestIdFutures.clear();
+
+    // remove banned ids while querying request ids
+    for (int i = 0; i < bannedIds.size(); i++) {
+      final int index = i;
+      Future<Boolean> bannedIdFuture = executorService
+          .submit(() -> filter.remove(bannedIds.get(index)));
+      bannedIdFutures.add(bannedIdFuture);
+
+      Future<Boolean> requestIdFuture = executorService
+          .submit(() -> filter.mightContain(requestIds.get(index)));
+      requestIdFutures.add(requestIdFuture);
+    }
+
+    for (Future<Boolean> future : bannedIdFutures) {
       assertTrue(future.get());
     }
-    futures.clear();
+    bannedIdFutures.clear();
     assertEquals(0, filter.getItems());
+
+    // non of the request ids should be in set
+    for (Future<Boolean> future : requestIdFutures) {
+      assertFalse(future.get());
+    }
+    requestIdFutures.clear();
   }
 
 }
