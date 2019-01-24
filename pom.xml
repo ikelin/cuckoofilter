@@ -29,7 +29,7 @@
 
   <scm>
     <connection>scm:git:git://github.com/ikelin/cuckoofilter.git</connection>
-    <developerConnection>scm:git:git@github.com:ikelin/cuckoofilter.git</developerConnection>
+    <developerConnection>scm:git:git@github.com/ikelin/cuckoofilter.git</developerConnection>
     <url>http://github.com/ikelin/cuckoofilter/tree/master</url>
   </scm>
 
@@ -107,6 +107,16 @@
           </archive>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.7.1</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>3.0.0</version>
+      </plugin>
     </plugins>
   </build>
 
@@ -176,5 +186,35 @@
       </build>
     </profile>
   </profiles>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>3.0.0</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>checkstyle</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+        <configuration>
+          <configLocation>google_checks.xml</configLocation>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>3.0.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>3.11.0</version>
+      </plugin>
+    </plugins>
+  </reporting>
 
 </project>

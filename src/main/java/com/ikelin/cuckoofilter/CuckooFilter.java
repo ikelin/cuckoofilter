@@ -53,7 +53,7 @@ public class CuckooFilter {
    *
    * @param itemHash the hash value of the item to lookup
    * @return true if hash value of the item might be in this filter.  Returns false if hash value of
-   * the item is definitely not in this filter.
+   *     the item is definitely not in this filter.
    */
   public boolean mightContain(long itemHash) {
     long fingerprint = getFingerprint(itemHash);
@@ -217,12 +217,12 @@ public class CuckooFilter {
 
   @Override
   public String toString() {
-    return "CuckooFilter{" +
-        "buckets=" + buckets +
-        ", entriesPerBucket=" + entriesPerBucket +
-        ", bitsPerEntry=" + bitsPerEntry +
-        ", maxRelocateAttempts=" + maxRelocateAttempts +
-        '}';
+    return "CuckooFilter{"
+        + "buckets=" + buckets
+        + ", entriesPerBucket=" + entriesPerBucket
+        + ", bitsPerEntry=" + bitsPerEntry
+        + ", maxRelocateAttempts=" + maxRelocateAttempts
+        + '}';
   }
 
   /**
@@ -253,7 +253,7 @@ public class CuckooFilter {
      * @param fpp the false positive probability for the filter
      * @return the builder instance
      * @throws IllegalArgumentException if {@code fpp} is not a between 0 (exclusive) and 1
-     * (exclusive)
+     *     (exclusive)
      */
     public Builder withFalsePositiveProbability(double fpp) {
       if (fpp <= 0 || fpp >= 1) {
@@ -272,7 +272,7 @@ public class CuckooFilter {
      * @param bitsPerEntry number of bits per entry
      * @return the builder instance
      * @throws IllegalArgumentException if {@code bitsPerEntry} is not between 1 and {@link
-     * java.lang.Integer#SIZE}
+     *     java.lang.Integer#SIZE}
      */
     public Builder withBitsPerEntry(int bitsPerEntry) {
       if (bitsPerEntry <= 0 || bitsPerEntry >= Integer.SIZE) {
@@ -292,7 +292,7 @@ public class CuckooFilter {
      * @param entriesPerBucket number of entries per bucket.
      * @return the builder instance
      * @throws IllegalArgumentException if {@code entriesPerBucket} is not power of 2 (1, 2, 4,
-     * 8...)
+     *     8...)
      */
     public Builder withEntriesPerBucket(int entriesPerBucket) {
       if (entriesPerBucket < 1) {
@@ -303,8 +303,8 @@ public class CuckooFilter {
         throw new IllegalArgumentException("entriesPerBucket must be less than or equal to 8");
       }
 
-      boolean powerOfTwo = (int) (Math.ceil((Math.log(entriesPerBucket) / Math.log(2)))) ==
-          (int) (Math.floor(((Math.log(entriesPerBucket) / Math.log(2)))));
+      boolean powerOfTwo = (int) Math.ceil(Math.log(entriesPerBucket) / Math.log(2))
+          == (int) Math.floor(Math.log(entriesPerBucket) / Math.log(2));
       if (!powerOfTwo) {
         throw new IllegalArgumentException("entriesPerBucket must be power of 2");
       }

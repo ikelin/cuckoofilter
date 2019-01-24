@@ -34,10 +34,10 @@ class BitSet {
    * @param toIndex index after the last bit to include
    * @return value of bits ranging from {@code fromIndex} to {@code toIndex}
    * @throws IndexOutOfBoundsException if {@code fromIndex} is negative, or {@code toIndex} is
-   * negative, or {@code fromIndex} is larger than {@code toIndex}
-   * @throws IllegalArgumentException if {@code fromIndex} and {@code toIndex} are the same, or if
-   * the range from {@code fromIndex} to {@code toIndex} is greater than {@link
-   * java.lang.Integer#SIZE}.
+   *     negative, or {@code fromIndex} is larger than {@code toIndex}
+   * @throws IllegalArgumentException if {@code fromIndex} and {@code toIndex} are the same, or
+   *     if the range from {@code fromIndex} to {@code toIndex} is greater than {@link
+   *     java.lang.Integer#SIZE}.
    */
   long get(long fromIndex, long toIndex) {
     checkRange(fromIndex, toIndex);
@@ -66,10 +66,10 @@ class BitSet {
    * @param toIndex index after the last bit to perform logical OR
    * @param value value of bits to perform logical OR with
    * @throws IndexOutOfBoundsException if {@code fromIndex} is negative, or {@code toIndex} is
-   * negative, or {@code fromIndex} is larger than {@code toIndex}
-   * @throws IllegalArgumentException if {@code fromIndex} and {@code toIndex} are the same, or if
-   * the range * from {@code fromIndex} to {@code toIndex} is greater than {@link
-   * java.lang.Long#SIZE}.
+   *     negative, or {@code fromIndex} is larger than {@code toIndex}
+   * @throws IllegalArgumentException if {@code fromIndex} and {@code toIndex} are the same, or
+   *     if the range * from {@code fromIndex} to {@code toIndex} is greater than {@link
+   *     java.lang.Long#SIZE}.
    */
   void or(long fromIndex, long toIndex, long value) {
     checkRange(fromIndex, toIndex);
@@ -95,9 +95,9 @@ class BitSet {
    * @param fromIndex index of the first bit to be cleared
    * @param toIndex index after the last bit to be cleared
    * @throws IndexOutOfBoundsException if {@code fromIndex} is negative, or {@code toIndex} is
-   * negative, or {@code fromIndex} is larger than {@code toIndex}
-   * @throws IllegalArgumentException if range from {@code fromIndex} to {@code toIndex} is greater
-   * than {@link java.lang.Long#SIZE}.
+   *     negative, or {@code fromIndex} is larger than {@code toIndex}
+   * @throws IllegalArgumentException if range from {@code fromIndex} to {@code toIndex} is
+   *     greater than {@link java.lang.Long#SIZE}.
    */
   void clear(long fromIndex, long toIndex) {
     checkRange(fromIndex, toIndex);
