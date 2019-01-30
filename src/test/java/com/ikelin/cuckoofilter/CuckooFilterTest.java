@@ -16,21 +16,19 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
-import net.openhft.hashing.LongHashFunction;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 class CuckooFilterTest {
 
-  private static LongHashFunction hashFunction;
   private static long fooHash;
   private static long barHash;
 
   @BeforeAll
   static void beforeAll() {
-    hashFunction = LongHashFunction.xx();
-    fooHash = hashFunction.hashChars("foo");
-    barHash = hashFunction.hashChars("bar");
+    fooHash = 7519298183266517360L;
+    barHash = -377454365428918003L;
   }
 
   @Test
@@ -269,14 +267,14 @@ class CuckooFilterTest {
     List<Long> bannedIds = new ArrayList<>();
     try (Stream<String> lines = Files
         .lines(Paths.get(ClassLoader.getSystemResource("banned-ids.txt").toURI()))) {
-      lines.forEach(line -> bannedIds.add(hashFunction.hashChars(line)));
+      lines.forEach(line -> bannedIds.add(Long.parseLong(line)));
     }
 
     // load request ids
     List<Long> requestIds = new ArrayList<>();
     try (Stream<String> lines = Files
         .lines(Paths.get(ClassLoader.getSystemResource("request-ids.txt").toURI()))) {
-      lines.forEach(line -> requestIds.add(hashFunction.hashChars(line)));
+      lines.forEach(line -> requestIds.add(Long.parseLong(line)));
     }
 
     // put banned ids into set while querying request ids
