@@ -4,6 +4,7 @@ A thread safe probability filter that performs set membership tests.  A lookup r
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.ikelin/cuckoofilter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.ikelin/cuckoofilter)
 [![Build Status](https://travis-ci.org/ikelin/cuckoofilter.svg?branch=master)](https://travis-ci.org/ikelin/cuckoofilter)
+[![Coverage Status](https://coveralls.io/repos/github/ikelin/cuckoofilter/badge.svg?branch=master)](https://coveralls.io/github/ikelin/cuckoofilter?branch=master)
 
 ## Usage
 
@@ -11,7 +12,7 @@ A thread safe probability filter that performs set membership tests.  A lookup r
 <dependency>
     <groupId>com.ikelin</groupId>
     <artifactId>cuckoofilter</artifactId>
-    <version>0.0.3</version>
+    <version>[VERSION]</version>
 </dependency>
 
 ```
