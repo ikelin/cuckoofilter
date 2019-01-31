@@ -13,7 +13,7 @@ class CuckooTable {
   private final StampedLock[] binLocks;
 
   // guarded by binLocks
-  private volatile BitSet bitSet;
+  private final BitSet bitSet;
 
   /**
    * Creates a cuckoo table.

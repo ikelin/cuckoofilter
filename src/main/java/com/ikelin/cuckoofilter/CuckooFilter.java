@@ -230,15 +230,15 @@ public class CuckooFilter {
    */
   public static class Builder {
 
-    private int expectedMaxCapacity;
+    private final int expectedMaxCapacity;
     private double fpp;
     private int bitsPerEntry;
     private int entriesPerBucket;
     private int concurrencyLevel;
 
     Builder(int expectedMaxCapacity) {
-      if (expectedMaxCapacity <= 0) {
-        throw new IllegalArgumentException("expectedMaxCapacity must be greater than 0");
+      if (expectedMaxCapacity < 1) {
+        throw new IllegalArgumentException("expectedMaxCapacity must be at least 1");
       }
 
       this.expectedMaxCapacity = expectedMaxCapacity;
@@ -296,11 +296,11 @@ public class CuckooFilter {
      */
     public Builder withEntriesPerBucket(int entriesPerBucket) {
       if (entriesPerBucket < 1) {
-        throw new IllegalArgumentException("entriesPerBucket must be greater than 0");
+        throw new IllegalArgumentException("entriesPerBucket must be at least 1");
       }
 
       if (entriesPerBucket > 8) {
-        throw new IllegalArgumentException("entriesPerBucket must be less than or equal to 8");
+        throw new IllegalArgumentException("entriesPerBucket must be at most 8");
       }
 
       boolean powerOfTwo = (int) Math.ceil(Math.log(entriesPerBucket) / Math.log(2))
@@ -318,11 +318,11 @@ public class CuckooFilter {
      *
      * @param concurrencyLevel the expected number of threads to be accessing this filter
      * @return the builder instance
-     * @throws IllegalArgumentException if {@code concurrencyLevel} is not greater than 0
+     * @throws IllegalArgumentException if {@code concurrencyLevel} is not at least 1
      */
     public Builder withConcurrencyLevel(int concurrencyLevel) {
-      if (concurrencyLevel <= 0) {
-        throw new IllegalArgumentException("concurrencyLevel must be greater than 0");
+      if (concurrencyLevel < 1) {
+        throw new IllegalArgumentException("concurrencyLevel must be at least 1");
       }
 
       this.concurrencyLevel = concurrencyLevel;
@@ -386,6 +386,7 @@ public class CuckooFilter {
         case 2:
         default:
           loadFactor = 0.84D;
+          break;
       }
       return loadFactor;
     }
