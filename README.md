@@ -5,14 +5,17 @@ A thread safe probability filter that performs set membership tests.  A lookup r
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.ikelin/cuckoofilter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.ikelin/cuckoofilter)
 [![Build Status](https://travis-ci.org/ikelin/cuckoofilter.svg?branch=master)](https://travis-ci.org/ikelin/cuckoofilter)
 [![Coverage Status](https://coveralls.io/repos/github/ikelin/cuckoofilter/badge.svg?branch=master)](https://coveralls.io/github/ikelin/cuckoofilter?branch=master)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c6ef9f24101546b9afe9f06b7751eec8)](https://www.codacy.com/app/ikelin/cuckoofilter?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ikelin/cuckoofilter&amp;utm_campaign=Badge_Grade)
 
 ## Usage
+
+Maven
 
 ```xml
 <dependency>
     <groupId>com.ikelin</groupId>
     <artifactId>cuckoofilter</artifactId>
-    <version>1.0.0</version>
+    <version>{VERSION}</version>
 </dependency>
 
 ```
