@@ -17,7 +17,7 @@ class BitSet {
    * @param size size of the bit set
    * @throws NegativeArraySizeException if {@code size} is a negative number
    */
-  BitSet(long size) {
+  BitSet(final long size) {
     if (size < 0) {
       throw new NegativeArraySizeException("size < 0: " + size);
     }
@@ -39,7 +39,7 @@ class BitSet {
    *     if the range from {@code fromIndex} to {@code toIndex} is greater than {@link
    *     java.lang.Integer#SIZE}.
    */
-  long get(long fromIndex, long toIndex) {
+  long get(final long fromIndex, final long toIndex) {
     checkRange(fromIndex, toIndex);
 
     int startWord = getWord(fromIndex);
@@ -71,7 +71,7 @@ class BitSet {
    *     if the range * from {@code fromIndex} to {@code toIndex} is greater than {@link
    *     java.lang.Long#SIZE}.
    */
-  void or(long fromIndex, long toIndex, long value) {
+  void or(final long fromIndex, final long toIndex, final long value) {
     checkRange(fromIndex, toIndex);
 
     int startWord = getWord(fromIndex);
@@ -99,7 +99,7 @@ class BitSet {
    * @throws IllegalArgumentException if range from {@code fromIndex} to {@code toIndex} is
    *     greater than {@link java.lang.Long#SIZE}.
    */
-  void clear(long fromIndex, long toIndex) {
+  void clear(final long fromIndex, final long toIndex) {
     checkRange(fromIndex, toIndex);
 
     int startWord = getWord(fromIndex);
@@ -116,7 +116,7 @@ class BitSet {
     }
   }
 
-  private void checkRange(long fromIndex, long toIndex) {
+  void checkRange(final long fromIndex, final long toIndex) {
     if (fromIndex < 0 || fromIndex >= size) {
       throw new IndexOutOfBoundsException(
           "fromIndex is not between 0 and " + size + ": " + fromIndex);
@@ -141,7 +141,7 @@ class BitSet {
     }
   }
 
-  private static int getWord(long bitIndex) {
+  private static int getWord(final long bitIndex) {
     return (int) (bitIndex >> ADDRESS_BITS_PER_WORD);
   }
 

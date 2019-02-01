@@ -252,8 +252,8 @@ class CuckooFilterTest {
   @Test
   void testConcurrency()
       throws ExecutionException, InterruptedException, IOException, URISyntaxException {
-    int capacity = (int) ((1 << 10) * 0.955D);
-    int items = (int) (capacity * 0.955D);
+    int capacity = (int) ((1 << 10) * 0.9D);
+    int items = (int) (capacity * 0.9D);
     double fpp = 0.002D;
 
     CuckooFilter filter = CuckooFilter.create(capacity)

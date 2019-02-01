@@ -19,11 +19,11 @@ public class CuckooFilter {
   private final int unusedBits;
 
   private CuckooFilter(
-      int buckets,
-      int entriesPerBucket,
-      int bitsPerEntry,
-      int concurrencyLevel,
-      int maxRelocateAttempts
+      final int buckets,
+      final int entriesPerBucket,
+      final int bitsPerEntry,
+      final int concurrencyLevel,
+      final int maxRelocateAttempts
   ) {
     this.buckets = buckets;
     this.entriesPerBucket = entriesPerBucket;
@@ -42,7 +42,7 @@ public class CuckooFilter {
    * @param expectedMaxCapacity the expected maximum number of items in the filter
    * @throws IllegalArgumentException if {@code expectedMaxCapacity} is not greater than 0
    */
-  public static Builder create(int expectedMaxCapacity) {
+  public static Builder create(final int expectedMaxCapacity) {
     return new Builder(expectedMaxCapacity);
   }
 
@@ -55,7 +55,7 @@ public class CuckooFilter {
    * @return true if hash value of the item might be in this filter.  Returns false if hash value of
    *     the item is definitely not in this filter.
    */
-  public boolean mightContain(long itemHash) {
+  public boolean mightContain(final long itemHash) {
     long fingerprint = getFingerprint(itemHash);
 
     int bucket = getBucket(itemHash);
@@ -74,7 +74,7 @@ public class CuckooFilter {
    * @param itemHash the hash value of the item to add
    * @return true if hash value of the item is added
    */
-  public boolean put(long itemHash) {
+  public boolean put(final long itemHash) {
     long fingerprint = getFingerprint(itemHash);
 
     int bucket = getBucket(itemHash);
@@ -112,7 +112,7 @@ public class CuckooFilter {
    * @param itemHash the hash value of the item to remove
    * @return true if hash value of the item is removed
    */
-  public boolean remove(long itemHash) {
+  public boolean remove(final long itemHash) {
     long fingerprint = getFingerprint(itemHash);
 
     int bucket = getBucket(itemHash);
@@ -136,7 +136,7 @@ public class CuckooFilter {
    * @param itemHash the hash value of the item to count
    * @return the number of times the hash value of the item is in this filter
    */
-  public int count(long itemHash) {
+  public int count(final long itemHash) {
     long fingerprint = getFingerprint(itemHash);
 
     int count = 0;
@@ -169,27 +169,52 @@ public class CuckooFilter {
     return (double) getItems() / (getBuckets() * getEntriesPerBucket());
   }
 
-  int getCapacity() {
+  /**
+   * Returns the capacity of this filter.
+   *
+   * @return the capacity of this filter
+   */
+  protected int getCapacity() {
     return getBuckets() * getEntriesPerBucket();
   }
 
-  int getBuckets() {
+  /**
+   * Returns the number of buckets in this filter.
+   *
+   * @return the number of buckets in this filter.
+   */
+  protected int getBuckets() {
     return buckets;
   }
 
-  int getEntriesPerBucket() {
+  /**
+   * Returns the number of entries per bucket of this filter.
+   *
+   * @return the number of entries per bucket of this filter
+   */
+  protected int getEntriesPerBucket() {
     return entriesPerBucket;
   }
 
-  int getBitsPerEntry() {
+  /**
+   * Returns the number of bits per entry of this filter.
+   *
+   * @return the number of bits per entry of this filter.
+   */
+  protected int getBitsPerEntry() {
     return bitsPerEntry;
   }
 
-  int getConcurrencyLevel() {
+  /**
+   * Returns the concurrency level of this filter.
+   *
+   * @return the concurrency level of this filter.
+   */
+  protected int getConcurrencyLevel() {
     return concurrencyLevel;
   }
 
-  private long getFingerprint(long itemHash) {
+  private long getFingerprint(final long itemHash) {
     for (int i = 0; i < Long.SIZE / bitsPerEntry; i++) {
       long fingerprint = itemHash << (Long.SIZE - bitsPerEntry * i) >>> unusedBits;
       if (fingerprint != 0) {  // fingerprint cannot be the same as an empty entry
@@ -199,20 +224,23 @@ public class CuckooFilter {
     return 1L;
   }
 
-  private int getBucket(long itemHash) {
+  private int getBucket(final long itemHash) {
     return getBucketIndex(itemHash >> bitsPerEntry);
   }
 
-  private int getBucket(int bucket, long fingerprint) {
+  private int getBucket(final int bucket, final long fingerprint) {
     return getBucketIndex(bucket ^ (fingerprint * 0x5bd1e995));
   }
 
-  private int getBucketIndex(long bucketHash) {
+  private int getBucketIndex(final long bucketHash) {
+    long hash;
     if (bucketHash < 0) {
-      bucketHash = ~bucketHash;
+      hash = ~bucketHash;
+    } else {
+      hash = bucketHash;
     }
 
-    return (int) (bucketHash & (buckets - 1));  // bucketHash % buckets
+    return (int) (hash & (buckets - 1));  // hash % buckets
   }
 
   @Override
@@ -236,7 +264,7 @@ public class CuckooFilter {
     private int entriesPerBucket;
     private int concurrencyLevel;
 
-    Builder(int expectedMaxCapacity) {
+    private Builder(final int expectedMaxCapacity) {
       if (expectedMaxCapacity < 1) {
         throw new IllegalArgumentException("expectedMaxCapacity must be at least 1");
       }
@@ -255,7 +283,7 @@ public class CuckooFilter {
      * @throws IllegalArgumentException if {@code fpp} is not a between 0 (exclusive) and 1
      *     (exclusive)
      */
-    public Builder withFalsePositiveProbability(double fpp) {
+    public Builder withFalsePositiveProbability(final double fpp) {
       if (fpp <= 0 || fpp >= 1) {
         throw new IllegalArgumentException("expectedMaxCapacity must be between 0 and 1");
       }
@@ -274,7 +302,7 @@ public class CuckooFilter {
      * @throws IllegalArgumentException if {@code bitsPerEntry} is not between 1 and {@link
      *     java.lang.Integer#SIZE}
      */
-    public Builder withBitsPerEntry(int bitsPerEntry) {
+    public Builder withBitsPerEntry(final int bitsPerEntry) {
       if (bitsPerEntry <= 0 || bitsPerEntry >= Integer.SIZE) {
         throw new IllegalArgumentException("bitsPerEntry must be between 1 and " + Integer.SIZE);
       }
@@ -294,7 +322,7 @@ public class CuckooFilter {
      * @throws IllegalArgumentException if {@code entriesPerBucket} is not power of 2 (1, 2, 4,
      *     8...)
      */
-    public Builder withEntriesPerBucket(int entriesPerBucket) {
+    public Builder withEntriesPerBucket(final int entriesPerBucket) {
       if (entriesPerBucket < 1) {
         throw new IllegalArgumentException("entriesPerBucket must be at least 1");
       }
@@ -320,7 +348,7 @@ public class CuckooFilter {
      * @return the builder instance
      * @throws IllegalArgumentException if {@code concurrencyLevel} is not at least 1
      */
-    public Builder withConcurrencyLevel(int concurrencyLevel) {
+    public Builder withConcurrencyLevel(final int concurrencyLevel) {
       if (concurrencyLevel < 1) {
         throw new IllegalArgumentException("concurrencyLevel must be at least 1");
       }
@@ -362,7 +390,7 @@ public class CuckooFilter {
       );
     }
 
-    private int getEntriesPerBucket(double fpp) {
+    private int getEntriesPerBucket(final double fpp) {
       int entriesPerBucket;
       if (fpp < 0.00001D) {
         entriesPerBucket = 8;
@@ -374,7 +402,7 @@ public class CuckooFilter {
       return entriesPerBucket;
     }
 
-    private double getLoadFactor(int entriesPerBucket) {
+    private double getLoadFactor(final int entriesPerBucket) {
       double loadFactor;
       switch (entriesPerBucket) {
         case 8:
@@ -391,17 +419,18 @@ public class CuckooFilter {
       return loadFactor;
     }
 
-    private int getBitsPerEntry(double fpp, double loadFactor) {
+    private int getBitsPerEntry(final double fpp, final double loadFactor) {
       return (int) Math.ceil((Math.log(1 / fpp) / Math.log(2) + 3) / loadFactor);
     }
 
-    private int getBuckets(int expectedMaxCapacity, int entriesPerBucket, double loadFactor) {
+    private int getBuckets(final int expectedMaxCapacity, final int entriesPerBucket,
+        final double loadFactor) {
       int buckets = (int) Math.ceil(expectedMaxCapacity / entriesPerBucket / loadFactor);
       int exp = Integer.SIZE - Integer.numberOfLeadingZeros(buckets - 1);
       return 1 << exp;
     }
 
-    private int getConcurrencyLevel(int buckets) {
+    private int getConcurrencyLevel(final int buckets) {
       int concurrencyLevel = Runtime.getRuntime().availableProcessors();
       if (concurrencyLevel >= buckets) {
         concurrencyLevel = buckets;
@@ -409,7 +438,7 @@ public class CuckooFilter {
       return concurrencyLevel;
     }
 
-    private int getMaxRelocateAttempts(int buckets) {
+    private int getMaxRelocateAttempts(final int buckets) {
       return Math.min(buckets, 500);
     }
 

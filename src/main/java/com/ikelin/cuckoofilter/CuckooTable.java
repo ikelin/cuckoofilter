@@ -23,7 +23,8 @@ class CuckooTable {
    * @param bitsPerEntry bits per entry for this cuckoo table
    * @param concurrencyLevel concurrency level for this cuckoo table
    */
-  CuckooTable(int buckets, int entriesPerBucket, int bitsPerEntry, int concurrencyLevel) {
+  CuckooTable(final int buckets, final int entriesPerBucket, final int bitsPerEntry,
+      final int concurrencyLevel) {
     if (buckets <= 0) {
       throw new IllegalArgumentException("buckets needs to be greater than 0: " + buckets);
     }
@@ -64,7 +65,7 @@ class CuckooTable {
    * @param value value of bits to check
    * @return true if the provided value exists in the specified bucket
    */
-  boolean contains(int bucket, long value) {
+  boolean contains(final int bucket, final long value) {
     StampedLock lock = getBinLock(bucket);
     long stamp = lock.tryOptimisticRead();
     boolean contains = hasValue(bucket, value);
@@ -87,7 +88,7 @@ class CuckooTable {
    * @param bucket the bucket to add value to
    * @param value the value to be added
    */
-  boolean addIfEmpty(int bucket, long value) {
+  boolean addIfEmpty(final int bucket, final long value) {
     StampedLock lock = getBinLock(bucket);
     long stamp = lock.writeLock();
     try {
@@ -121,7 +122,7 @@ class CuckooTable {
    * @param value the value to be set
    * @return the existing value at the specified bucket and entry
    */
-  long getAndSet(int bucket, int entry, long value) {
+  long getAndSet(final int bucket, final int entry, final long value) {
     StampedLock lock = getBinLock(bucket);
     long stamp = lock.writeLock();
     try {
@@ -147,7 +148,7 @@ class CuckooTable {
    * @param value the value to be removed
    * @return true if the value was removed
    */
-  boolean remove(int bucket, long value) {
+  boolean remove(final int bucket, final long value) {
     StampedLock lock = getBinLock(bucket);
     long stamp = lock.writeLock();
     try {
@@ -170,7 +171,7 @@ class CuckooTable {
    * @param value the value to be counted
    * @return the number of instances the value appears in the bucket
    */
-  int count(int bucket, long value) {
+  int count(final int bucket, final long value) {
     StampedLock lock = getBinLock(bucket);
     long stamp = lock.tryOptimisticRead();
 
@@ -197,7 +198,7 @@ class CuckooTable {
     return count;
   }
 
-  private boolean hasValue(int bucket, long value) {
+  private boolean hasValue(final int bucket, final long value) {
     for (int i = 0; i < entriesPerBucket; i++) {
       if (value == getValue(bucket, i)) {
         return true;
@@ -206,33 +207,33 @@ class CuckooTable {
     return false;
   }
 
-  private long getValue(int bucket, int entry) {
+  private long getValue(final int bucket, final int entry) {
     long start = getStartBit(bucket, entry);
     long end = getEndBit(start);
     return bitSet.get(start, end);
   }
 
-  private void orValue(int bucket, int entry, long value) {
+  private void orValue(final int bucket, final int entry, final long value) {
     long start = getStartBit(bucket, entry);
     long end = getEndBit(start);
     bitSet.or(start, end, value);
   }
 
-  private void clearValue(int bucket, int entry) {
+  private void clearValue(final int bucket, final int entry) {
     long start = getStartBit(bucket, entry);
     long end = getEndBit(start);
     bitSet.clear(start, end);
   }
 
-  private long getStartBit(int bucket, int entry) {
+  private long getStartBit(final int bucket, final int entry) {
     return ((long) bucket * entriesPerBucket + entry) * bitsPerEntry;
   }
 
-  private long getEndBit(long start) {
+  private long getEndBit(final long start) {
     return start + bitsPerEntry;
   }
 
-  private StampedLock getBinLock(int bucket) {
+  private StampedLock getBinLock(final int bucket) {
     int bin = bucket % bins;
     return binLocks[bin];
   }
