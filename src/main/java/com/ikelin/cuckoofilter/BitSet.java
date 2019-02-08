@@ -3,7 +3,7 @@ package com.ikelin.cuckoofilter;
 /**
  * A fixed length bit set that provides convenient methods for cuckoo table operations.
  */
-class BitSet {
+public class BitSet {
 
   private static final long WORD_MASK = 0xffffffffffffffffL;
   private static final int ADDRESS_BITS_PER_WORD = 6;
@@ -17,7 +17,7 @@ class BitSet {
    * @param size size of the bit set
    * @throws NegativeArraySizeException if {@code size} is a negative number
    */
-  BitSet(final long size) {
+  public BitSet(final long size) {
     if (size < 0) {
       throw new NegativeArraySizeException("size < 0: " + size);
     }
@@ -39,7 +39,7 @@ class BitSet {
    *     if the range from {@code fromIndex} to {@code toIndex} is greater than {@link
    *     java.lang.Integer#SIZE}.
    */
-  long get(final long fromIndex, final long toIndex) {
+  public long get(final long fromIndex, final long toIndex) {
     checkRange(fromIndex, toIndex);
 
     int startWord = getWord(fromIndex);
@@ -71,7 +71,7 @@ class BitSet {
    *     if the range * from {@code fromIndex} to {@code toIndex} is greater than {@link
    *     java.lang.Long#SIZE}.
    */
-  void or(final long fromIndex, final long toIndex, final long value) {
+  public void or(final long fromIndex, final long toIndex, final long value) {
     checkRange(fromIndex, toIndex);
 
     int startWord = getWord(fromIndex);
@@ -99,7 +99,7 @@ class BitSet {
    * @throws IllegalArgumentException if range from {@code fromIndex} to {@code toIndex} is
    *     greater than {@link java.lang.Long#SIZE}.
    */
-  void clear(final long fromIndex, final long toIndex) {
+  public void clear(final long fromIndex, final long toIndex) {
     checkRange(fromIndex, toIndex);
 
     int startWord = getWord(fromIndex);
@@ -116,7 +116,7 @@ class BitSet {
     }
   }
 
-  void checkRange(final long fromIndex, final long toIndex) {
+  public void checkRange(final long fromIndex, final long toIndex) {
     if (fromIndex < 0 || fromIndex >= size) {
       throw new IndexOutOfBoundsException(
           "fromIndex is not between 0 and " + size + ": " + fromIndex);

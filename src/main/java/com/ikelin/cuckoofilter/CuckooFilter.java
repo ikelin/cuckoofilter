@@ -174,7 +174,7 @@ public class CuckooFilter {
    *
    * @return the capacity of this filter
    */
-  protected int getCapacity() {
+  public int getCapacity() {
     return getBuckets() * getEntriesPerBucket();
   }
 
@@ -183,7 +183,7 @@ public class CuckooFilter {
    *
    * @return the number of buckets in this filter.
    */
-  protected int getBuckets() {
+  public int getBuckets() {
     return buckets;
   }
 
@@ -192,7 +192,7 @@ public class CuckooFilter {
    *
    * @return the number of entries per bucket of this filter
    */
-  protected int getEntriesPerBucket() {
+  public int getEntriesPerBucket() {
     return entriesPerBucket;
   }
 
@@ -201,7 +201,7 @@ public class CuckooFilter {
    *
    * @return the number of bits per entry of this filter.
    */
-  protected int getBitsPerEntry() {
+  public int getBitsPerEntry() {
     return bitsPerEntry;
   }
 
@@ -210,7 +210,7 @@ public class CuckooFilter {
    *
    * @return the concurrency level of this filter.
    */
-  protected int getConcurrencyLevel() {
+  public int getConcurrencyLevel() {
     return concurrencyLevel;
   }
 

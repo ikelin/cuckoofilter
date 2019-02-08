@@ -5,7 +5,7 @@ import java.util.concurrent.locks.StampedLock;
 /**
  * A thread safe cuckoo hash table.
  */
-class CuckooTable {
+public class CuckooTable {
 
   private final int entriesPerBucket;
   private final int bitsPerEntry;
@@ -23,7 +23,7 @@ class CuckooTable {
    * @param bitsPerEntry bits per entry for this cuckoo table
    * @param concurrencyLevel concurrency level for this cuckoo table
    */
-  CuckooTable(final int buckets, final int entriesPerBucket, final int bitsPerEntry,
+  public CuckooTable(final int buckets, final int entriesPerBucket, final int bitsPerEntry,
       final int concurrencyLevel) {
     if (buckets <= 0) {
       throw new IllegalArgumentException("buckets needs to be greater than 0: " + buckets);
@@ -65,7 +65,7 @@ class CuckooTable {
    * @param value value of bits to check
    * @return true if the provided value exists in the specified bucket
    */
-  boolean contains(final int bucket, final long value) {
+  public boolean contains(final int bucket, final long value) {
     StampedLock lock = getBinLock(bucket);
     long stamp = lock.tryOptimisticRead();
     boolean contains = hasValue(bucket, value);
@@ -88,7 +88,7 @@ class CuckooTable {
    * @param bucket the bucket to add value to
    * @param value the value to be added
    */
-  boolean addIfEmpty(final int bucket, final long value) {
+  public boolean addIfEmpty(final int bucket, final long value) {
     StampedLock lock = getBinLock(bucket);
     long stamp = lock.writeLock();
     try {
@@ -122,7 +122,7 @@ class CuckooTable {
    * @param value the value to be set
    * @return the existing value at the specified bucket and entry
    */
-  long getAndSet(final int bucket, final int entry, final long value) {
+  public long getAndSet(final int bucket, final int entry, final long value) {
     StampedLock lock = getBinLock(bucket);
     long stamp = lock.writeLock();
     try {
@@ -148,7 +148,7 @@ class CuckooTable {
    * @param value the value to be removed
    * @return true if the value was removed
    */
-  boolean remove(final int bucket, final long value) {
+  public boolean remove(final int bucket, final long value) {
     StampedLock lock = getBinLock(bucket);
     long stamp = lock.writeLock();
     try {
@@ -171,7 +171,7 @@ class CuckooTable {
    * @param value the value to be counted
    * @return the number of instances the value appears in the bucket
    */
-  int count(final int bucket, final long value) {
+  public int count(final int bucket, final long value) {
     StampedLock lock = getBinLock(bucket);
     long stamp = lock.tryOptimisticRead();
 
