@@ -9,7 +9,7 @@ A thread safe probability filter that performs set membership tests.  A lookup r
 
 ## Usage
 
-Maven
+Maven `pom.xml`:
 
 ```xml
 <dependency>
@@ -20,7 +20,7 @@ Maven
 
 ```
 
-## Creating a Filter
+### Creating a Filter
 
 ```java
 CuckooFilter filter = CuckooFilter.create(10000)
