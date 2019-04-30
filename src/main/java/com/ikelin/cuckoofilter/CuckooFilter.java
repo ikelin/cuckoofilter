@@ -1,12 +1,15 @@
 package com.ikelin.cuckoofilter;
 
+import java.io.Serializable;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A thread safe probability filter that supports put, mightContain, remove and count.
  */
-public class CuckooFilter {
+public class CuckooFilter implements Serializable {
+
+  public static final long serialVersionUID = -748010276402545304L;
 
   private final int buckets;
   private final int bitsPerEntry;

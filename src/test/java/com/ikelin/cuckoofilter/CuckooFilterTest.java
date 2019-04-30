@@ -8,6 +8,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 class CuckooFilterTest {
 
   private static long fooHash;
@@ -30,17 +36,20 @@ class CuckooFilterTest {
 
   @Test
   void testCreateWithFpp() {
-    CuckooFilter filter = CuckooFilter.create(100).withFalsePositiveProbability(0.01D).build();
+    CuckooFilter filter = CuckooFilter.create(100)
+        .withFalsePositiveProbability(0.01D).build();
     assertEquals(64, filter.getBuckets());
     assertEquals(2, filter.getEntriesPerBucket());
     assertEquals(12, filter.getBitsPerEntry());
 
-    filter = CuckooFilter.create(100).withFalsePositiveProbability(0.001D).build();
+    filter = CuckooFilter.create(100).withFalsePositiveProbability(0.001D)
+        .build();
     assertEquals(32, filter.getBuckets());
     assertEquals(4, filter.getEntriesPerBucket());
     assertEquals(14, filter.getBitsPerEntry());
 
-    filter = CuckooFilter.create(100).withFalsePositiveProbability(0.000001D).build();
+    filter = CuckooFilter.create(100).withFalsePositiveProbability(0.000001D)
+        .build();
     assertEquals(16, filter.getBuckets());
     assertEquals(8, filter.getEntriesPerBucket());
     assertEquals(24, filter.getBitsPerEntry());
@@ -56,7 +65,8 @@ class CuckooFilterTest {
 
   @Test
   void testCreateWithEntriesPerBucket() {
-    CuckooFilter filter = CuckooFilter.create(100).withEntriesPerBucket(8).build();
+    CuckooFilter filter = CuckooFilter.create(100).withEntriesPerBucket(8)
+        .build();
     assertEquals(16, filter.getBuckets());
     assertEquals(8, filter.getEntriesPerBucket());
     assertEquals(13, filter.getBitsPerEntry());
@@ -64,7 +74,8 @@ class CuckooFilterTest {
 
   @Test
   void testCreateWithConcurrencyLevel() {
-    CuckooFilter filter = CuckooFilter.create(100).withConcurrencyLevel(3).build();
+    CuckooFilter filter = CuckooFilter.create(100).withConcurrencyLevel(3)
+        .build();
     assertEquals(3, filter.getConcurrencyLevel());
 
     int availableProcessors = Runtime.getRuntime().availableProcessors();
@@ -78,7 +89,8 @@ class CuckooFilterTest {
 
   @Test
   void testCreateInvalid() {
-    assertThrows(IllegalArgumentException.class, () -> CuckooFilter.create(0).build());
+    assertThrows(IllegalArgumentException.class,
+        () -> CuckooFilter.create(0).build());
     assertThrows(IllegalArgumentException.class,
         () -> CuckooFilter.create(100).withFalsePositiveProbability(0).build());
     assertThrows(IllegalArgumentException.class,
@@ -111,7 +123,8 @@ class CuckooFilterTest {
   @Test
   void testPutDuplicate() {
     int entriesPerBucket = 4;
-    CuckooFilter filter = CuckooFilter.create(100).withEntriesPerBucket(entriesPerBucket).build();
+    CuckooFilter filter = CuckooFilter.create(100)
+        .withEntriesPerBucket(entriesPerBucket).build();
 
     for (int i = 0; i < entriesPerBucket * 2; i++) {
       assertTrue(filter.put(fooHash));
@@ -234,6 +247,32 @@ class CuckooFilterTest {
 
     assertTrue(filter.remove(fooHash));
     assertEquals(0, filter.getItems());
+  }
+
+  @Test
+  void testSerializable() throws IOException, ClassNotFoundException {
+    CuckooFilter filter = CuckooFilter.create(100).build();
+
+    assertTrue(filter.put(fooHash));
+    assertTrue(filter.mightContain(fooHash));
+    assertFalse(filter.mightContain(barHash));
+    assertEquals(1, filter.count(fooHash));
+
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    ObjectOutputStream oos = new ObjectOutputStream(baos);
+    oos.writeObject(filter);
+    oos.close();
+
+    ObjectInputStream ois = new ObjectInputStream(
+        new ByteArrayInputStream(baos.toByteArray()));
+    CuckooFilter copyFilter = (CuckooFilter) ois.readObject();
+
+    assertTrue(copyFilter.mightContain(fooHash));
+    assertFalse(copyFilter.mightContain(barHash));
+    assertEquals(1, copyFilter.count(fooHash));
+
+    assertTrue(copyFilter.put(fooHash));
+    assertEquals(2, copyFilter.count(fooHash));
 
   }
 

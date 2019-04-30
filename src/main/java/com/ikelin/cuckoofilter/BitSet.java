@@ -1,9 +1,13 @@
 package com.ikelin.cuckoofilter;
 
+import java.io.Serializable;
+
 /**
  * A fixed length bit set that provides convenient methods for cuckoo table operations.
  */
-public class BitSet {
+public class BitSet implements Serializable {
+
+  public static final long serialVersionUID = 7286845561221016229L;
 
   private static final long WORD_MASK = 0xffffffffffffffffL;
   private static final int ADDRESS_BITS_PER_WORD = 6;

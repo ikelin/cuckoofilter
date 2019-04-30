@@ -1,11 +1,14 @@
 package com.ikelin.cuckoofilter;
 
+import java.io.Serializable;
 import java.util.concurrent.locks.StampedLock;
 
 /**
  * A thread safe cuckoo hash table.
  */
-public class CuckooTable {
+public class CuckooTable implements Serializable {
+
+  public static final long serialVersionUID = -6696825173402239653L;
 
   private final int entriesPerBucket;
   private final int bitsPerEntry;
